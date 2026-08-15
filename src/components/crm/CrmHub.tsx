@@ -3,13 +3,15 @@ import { useApp } from '../../context/AppContext';
 import { Customer } from '../../types';
 import { 
   Users, MessageSquare, Award, Gift, Search, 
-  Send, Sparkles, Phone, Mail, Calendar, CheckCircle 
+  Send, Sparkles, Phone, Mail, Calendar, CheckCircle, Zap 
 } from 'lucide-react';
+import { WhatsAppCampaignsModal } from './WhatsAppCampaignsModal';
 
 export const CrmHub: React.FC = () => {
   const { customers, showToast } = useApp();
 
   const [search, setSearch] = useState('');
+  const [campaignsModalOpen, setCampaignsModalOpen] = useState(false);
   const [selectedCust, setSelectedCust] = useState<Customer | null>(customers[0] || null);
   const [campaignType, setCampaignType] = useState<'birthday' | 'anniversary' | 'festive' | 'loyalty'>('birthday');
   const [customMsg, setCustomMsg] = useState(
@@ -39,7 +41,13 @@ export const CrmHub: React.FC = () => {
           <h1 className="text-2xl font-extrabold text-white">Customer 360 & WhatsApp Commerce Hub</h1>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2.5">
+          <button
+            onClick={() => setCampaignsModalOpen(true)}
+            className="flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-500 hover:to-rose-500 text-white rounded-xl text-xs font-bold shadow-lg shadow-pink-600/20 transition-all tactile-btn"
+          >
+            <Sparkles className="w-4 h-4" /> 🚀 Automated WhatsApp Campaigns
+          </button>
           <button
             onClick={() => showToast('Sync Complete', 'Customer loyalty balances updated from Cloud.', 'info')}
             className="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 rounded-xl text-xs font-medium"
@@ -192,6 +200,10 @@ export const CrmHub: React.FC = () => {
           )}
         </div>
       </div>
+
+      {campaignsModalOpen && (
+        <WhatsAppCampaignsModal onClose={() => setCampaignsModalOpen(false)} />
+      )}
     </div>
   );
 };

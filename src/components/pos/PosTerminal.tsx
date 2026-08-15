@@ -4,13 +4,15 @@ import { Product, ApparelCategory, SaleInvoice, TenderSplit, CartItem, AdvanceBo
 import { 
   Barcode, Search, Plus, Minus, Trash2, Scissors, 
   UserPlus, UserCheck, Tag, Zap, CreditCard, ShoppingCart, 
-  Sparkles, Check, ArrowRight, ShieldCheck, BookmarkCheck, Ruler
+  Sparkles, Check, ArrowRight, ShieldCheck, BookmarkCheck, Ruler, Monitor
 } from 'lucide-react';
 import { CheckoutModal } from './CheckoutModal';
 import { ThermalReceiptModal } from './ThermalReceiptModal';
 import { AlterationModal } from './AlterationModal';
 import { AdvanceBookingModal } from './AdvanceBookingModal';
 import { FabricCalculatorModal } from './FabricCalculatorModal';
+import { CustomerFacingDisplay } from './CustomerFacingDisplay';
+import { AiStylistModal } from './AiStylistModal';
 import { sounds } from '../../utils/audio';
 
 export const PosTerminal: React.FC = () => {
@@ -32,6 +34,8 @@ export const PosTerminal: React.FC = () => {
   const [fabricModalOpen, setFabricModalOpen] = useState(false);
   const [appliedAdvance, setAppliedAdvance] = useState<AdvanceBooking | null>(null);
   const [scanFlash, setScanFlash] = useState(false);
+  const [cfdModalOpen, setCfdModalOpen] = useState(false);
+  const [stylistModalOpen, setStylistModalOpen] = useState(false);
 
   const barcodeInputRef = useRef<HTMLInputElement>(null);
 
@@ -222,8 +226,19 @@ export const PosTerminal: React.FC = () => {
             </div>
           </form>
 
-          {/* Quick Tools: Fabric Cut Calculator & Advance Token */}
+          {/* Quick Tools: Fabric Cut, Advance Token, AI Stylist & CFD Display */}
           <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                setStylistModalOpen(true);
+                sounds.playTapClick();
+              }}
+              className="flex items-center gap-1.5 px-3.5 py-2.5 bg-purple-600/15 hover:bg-purple-600/30 text-purple-300 border border-purple-500/30 rounded-2xl text-xs font-bold whitespace-nowrap transition-all tactile-btn"
+              title="AI Wardrobe Stylist & VIP Ensemble Builder"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-purple-300 animate-pulse" /> AI Stylist
+            </button>
             <button
               type="button"
               onClick={() => {
@@ -245,6 +260,17 @@ export const PosTerminal: React.FC = () => {
               title="Customer Advance Bookings & Tokens (AdvanceVoucherPop)"
             >
               <Tag className="w-3.5 h-3.5" /> Advance Orders
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setCfdModalOpen(true);
+                sounds.playTapClick();
+              }}
+              className="flex items-center gap-1.5 px-3.5 py-2.5 bg-blue-600/15 hover:bg-blue-600/30 text-blue-300 border border-blue-500/30 rounded-2xl text-xs font-bold whitespace-nowrap transition-all tactile-btn"
+              title="Dual-Screen Customer Facing Display (CFD)"
+            >
+              <Monitor className="w-3.5 h-3.5 text-blue-400" /> Customer Screen
             </button>
           </div>
 
@@ -671,6 +697,20 @@ export const PosTerminal: React.FC = () => {
               ...prod,
               salePrice: Math.round(amt / 1),
             }, 1);
+          }}
+        />
+      )}
+
+      {cfdModalOpen && (
+        <CustomerFacingDisplay onClose={() => setCfdModalOpen(false)} />
+      )}
+
+      {stylistModalOpen && (
+        <AiStylistModal
+          customer={selectedCustomer}
+          onClose={() => setStylistModalOpen(false)}
+          onAddEnsembleToCart={(items) => {
+            items.forEach(it => addToCart(it, 1));
           }}
         />
       )}

@@ -3,13 +3,15 @@ import { useApp } from '../../context/AppContext';
 import { Product, ApparelCategory } from '../../types';
 import { 
   Layers, Barcode, Box, Plus, Search, Filter, 
-  Printer, CheckCircle2, AlertCircle, Scan, Tag, RefreshCw 
+  Printer, CheckCircle2, AlertCircle, Scan, Tag, RefreshCw, Zap
 } from 'lucide-react';
+import { RapidStockAuditModal } from './RapidStockAuditModal';
 
 export const InventoryHub: React.FC = () => {
   const { products, setProducts, currentStoreId, currentStore, stores, showToast } = useApp();
 
   const [activeSubTab, setActiveSubTab] = useState<'matrix' | 'boxes' | 'barcodeStudio' | 'audit'>('matrix');
+  const [rapidAuditModalOpen, setRapidAuditModalOpen] = useState(false);
   const [search, setSearch] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('All');
   
@@ -157,12 +159,21 @@ export const InventoryHub: React.FC = () => {
             </button>
           </div>
 
-          <button
-            onClick={() => setNewProductModal(true)}
-            className="flex items-center gap-1.5 px-3.5 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-xl text-xs font-bold shadow-lg shadow-blue-600/20 transition-all"
-          >
-            <Plus className="w-4 h-4" /> Add New SKU
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setRapidAuditModalOpen(true)}
+              className="flex items-center gap-1.5 px-3.5 py-2 bg-emerald-600/15 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/30 rounded-xl text-xs font-bold transition-all tactile-btn"
+              title="100 Scans/Min Physical Rack & Box Inventory Audit"
+            >
+              <Zap className="w-4 h-4 text-emerald-400" /> Rapid Stock Audit
+            </button>
+            <button
+              onClick={() => setNewProductModal(true)}
+              className="flex items-center gap-1.5 px-3.5 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-xl text-xs font-bold shadow-lg shadow-blue-600/20 transition-all tactile-btn"
+            >
+              <Plus className="w-4 h-4" /> Add New SKU
+            </button>
+          </div>
         </div>
       </div>
 
@@ -579,6 +590,10 @@ export const InventoryHub: React.FC = () => {
             </form>
           </div>
         </div>
+      )}
+
+      {rapidAuditModalOpen && (
+        <RapidStockAuditModal onClose={() => setRapidAuditModalOpen(false)} />
       )}
     </div>
   );

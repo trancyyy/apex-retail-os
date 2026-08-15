@@ -3,14 +3,16 @@ import { useApp } from '../../context/AppContext';
 import { StoreId, StockTransferNote } from '../../types';
 import { 
   Truck, Plus, ArrowRight, CheckCircle2, 
-  Clock, AlertTriangle, FileText, Check, Package, Printer 
+  Clock, AlertTriangle, FileText, Check, Package, Printer, TrendingUp, Sparkles 
 } from 'lucide-react';
 import { BoxPickSlipModal } from './BoxPickSlipModal';
+import { SmartReplenishmentModal } from './SmartReplenishmentModal';
 
 export const TransfersHub: React.FC = () => {
   const { transfers, createTransfer, updateTransferStatus, stores, products, showToast } = useApp();
 
   const [newStnModal, setNewStnModal] = useState(false);
+  const [replenishmentModalOpen, setReplenishmentModalOpen] = useState(false);
   const [pickSlipTransfer, setPickSlipTransfer] = useState<StockTransferNote | null>(null);
   const [fromStore, setFromStore] = useState<StoreId>('zirakpur_godown');
   const [toStore, setToStore] = useState<StoreId>('dalhousie_store');
@@ -60,12 +62,21 @@ export const TransfersHub: React.FC = () => {
           <h1 className="text-2xl font-extrabold text-white">Stock Transfer Notes (STN) & Inter-Store Inward</h1>
         </div>
 
-        <button
-          onClick={() => setNewStnModal(true)}
-          className="flex items-center gap-1.5 px-4 py-2 bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold rounded-xl text-xs shadow-lg shadow-amber-600/20 transition-all"
-        >
-          <Plus className="w-4 h-4" /> Create New STN Transfer
-        </button>
+        <div className="flex items-center gap-2.5">
+          <button
+            onClick={() => setReplenishmentModalOpen(true)}
+            className="flex items-center gap-1.5 px-4 py-2 bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 border border-blue-500/30 font-bold rounded-xl text-xs transition-all tactile-btn"
+            title="AI Demand Velocity Auto-Replenishment"
+          >
+            <TrendingUp className="w-4 h-4 text-blue-400" /> Auto-Replenishment
+          </button>
+          <button
+            onClick={() => setNewStnModal(true)}
+            className="flex items-center gap-1.5 px-4 py-2 bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold rounded-xl text-xs shadow-lg shadow-amber-600/20 transition-all tactile-btn"
+          >
+            <Plus className="w-4 h-4" /> Create New STN Transfer
+          </button>
+        </div>
       </div>
 
       {/* Transfer Pipeline Cards */}
@@ -274,6 +285,10 @@ export const TransfersHub: React.FC = () => {
           transfer={pickSlipTransfer}
           onClose={() => setPickSlipTransfer(null)}
         />
+      )}
+
+      {replenishmentModalOpen && (
+        <SmartReplenishmentModal onClose={() => setReplenishmentModalOpen(false)} />
       )}
     </div>
   );
