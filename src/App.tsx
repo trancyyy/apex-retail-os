@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { AppProvider, useApp } from './context/AppContext';
+import { Windows11Titlebar } from './components/Windows11Titlebar';
 import { Navbar } from './components/Navbar';
 import { Sidebar } from './components/Sidebar';
 import { PosTerminal } from './components/pos/PosTerminal';
@@ -19,14 +20,17 @@ import { ToastContainer } from './components/Toast';
 import { ShiftEndModal } from './components/pos/ShiftEndModal';
 
 const MainLayout: React.FC = () => {
-  const { activeTab, isStandalonePosMode, cashierName } = useApp();
+  const { activeTab, isStandalonePosMode, cashierName, setCommandPaletteOpen } = useApp();
   const [shiftModalOpen, setShiftModalOpen] = useState(false);
   const [isLocked, setIsLocked] = useState(false);
 
   // If in Dedicated Standalone POS Terminal Mode
   if (isStandalonePosMode) {
     return (
-      <div className="flex flex-col h-screen overflow-hidden bg-[#030712] text-slate-100 font-sans">
+      <div className="flex flex-col h-screen overflow-hidden bg-[#1c1c1c] text-white select-none">
+        {/* Top Windows 11 Title Bar */}
+        <Windows11Titlebar onOpenCommandPalette={() => setCommandPaletteOpen(true)} />
+
         {/* Dedicated Standalone POS Kiosk Header */}
         <StandalonePosHeader 
           onOpenShiftModal={() => setShiftModalOpen(true)}
@@ -34,7 +38,7 @@ const MainLayout: React.FC = () => {
         />
 
         {/* Full-Width POS Terminal Workspace */}
-        <main className="flex-1 flex flex-col overflow-hidden bg-[#030712] relative">
+        <main className="flex-1 flex flex-col overflow-hidden bg-[#1c1c1c] relative">
           <PosTerminal />
         </main>
 
@@ -62,17 +66,20 @@ const MainLayout: React.FC = () => {
 
   // Full Enterprise ERP Suite Mode
   return (
-    <div className="flex flex-col h-screen overflow-hidden bg-[#030712] text-slate-100 font-sans">
-      {/* Top Navigation Bar */}
+    <div className="flex flex-col h-screen overflow-hidden bg-[#1c1c1c] text-white select-none">
+      {/* Top Windows 11 Title Bar */}
+      <Windows11Titlebar onOpenCommandPalette={() => setCommandPaletteOpen(true)} />
+
+      {/* Fluent Command & Breadcrumb Bar */}
       <Navbar onOpenShiftModal={() => setShiftModalOpen(true)} />
 
       {/* Main App Body */}
       <div className="flex flex-1 overflow-hidden">
-        {/* Left Sidebar */}
+        {/* Left Windows 11 Navigation Pane */}
         <Sidebar />
 
         {/* Dynamic Operational Content View */}
-        <main className="flex-1 flex flex-col overflow-hidden bg-[#030712] relative">
+        <main className="flex-1 flex flex-col overflow-hidden bg-[#1c1c1c] relative">
           {activeTab === 'pos' && <PosTerminal />}
           {activeTab === 'inventory' && <InventoryHub />}
           {activeTab === 'approvals' && <ApprovalsHub />}

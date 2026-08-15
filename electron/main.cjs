@@ -12,8 +12,10 @@ function createWindow() {
     height: Math.min(1000, height),
     minWidth: 1200,
     minHeight: 768,
-    title: 'Apex Retail OS — Enterprise Multi-Store Apparel ERP & POS',
-    backgroundColor: '#030712',
+    title: 'Apex Retail OS — Enterprise Multi-Store Apparel Suite',
+    frame: false, // Windows 11 Fluent frameless window with custom titlebar
+    titleBarStyle: 'hidden',
+    backgroundColor: '#202020',
     darkTheme: true,
     show: false,
     webPreferences: {
@@ -21,17 +23,49 @@ function createWindow() {
       nodeIntegration: false,
       contextIsolation: true,
       backgroundThrottling: false,
-      webSecurity: true
+      webSecurity: false // allow relative local asset loading
     }
   });
 
-  // Load from local dist in production or localhost in development
+  // Window state IPC handlers
+  ipcMain.on('window-minimize', () => {
+    if (mainWindow) mainWindow.minimize();
+  });
+
+  ipcMain.on('window-maximize', () => {
+    if (mainWindow) {
+      if (mainWindow.isMaximized()) {
+        mainWindow.unmaximize();
+      } else {
+        mainWindow.maximize();
+      }
+    }
+  });
+
+  ipcMain.on('window-close', () => {
+    if (mainWindow) mainWindow.close();
+  });
+
+  ipcMain.handle('window-is-maximized', () => {
+    return mainWindow ? mainWindow.isMaximized() : false;
+  });
+
+  // Track maximize state changes
+  mainWindow.on('maximize', () => {
+    mainWindow.webContents.send('window-maximize-changed', true);
+  });
+  mainWindow.on('unmaximize', () => {
+    mainWindow.webContents.send('window-maximize-changed', false);
+  });
+
   const isDev = process.env.NODE_ENV === 'development' || !app.isPackaged;
 
   if (isDev && process.env.VITE_DEV_SERVER_URL) {
     mainWindow.loadURL(process.env.VITE_DEV_SERVER_URL);
   } else {
-    mainWindow.loadFile(path.join(__dirname, '../dist/index.html'));
+    // In production, load the relative dist/index.html
+    const indexPath = path.join(__dirname, '../dist/index.html');
+    mainWindow.loadFile(indexPath);
   }
 
   mainWindow.once('ready-to-show', () => {

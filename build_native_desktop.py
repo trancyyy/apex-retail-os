@@ -1,26 +1,26 @@
 import os
 import shutil
 import subprocess
-import time
 import tempfile
+import time
 
 base_dir = r"E:\Antigravity\Emerges OS"
-out_dir = os.path.join(base_dir, "release-exe")
+out_dir = r"E:\Antigravity\Apex-Retail-Desktop"
 
-# Kill any locked running instances
+# Kill any running instances
 subprocess.run(["powershell", "-Command", "Stop-Process -Name 'Apex Retail OS', 'electron' -Force -ErrorAction SilentlyContinue"], capture_output=True)
 time.sleep(1)
 
-# Use temp staging directory
-temp_stage = tempfile.mkdtemp(prefix="apex_build_")
+if os.path.exists(out_dir):
+    try:
+        shutil.rmtree(out_dir, ignore_errors=True)
+    except Exception:
+        pass
 
-# Copy dist
+temp_stage = tempfile.mkdtemp(prefix="apex_fluent_")
 shutil.copytree(os.path.join(base_dir, "dist"), os.path.join(temp_stage, "dist"))
-
-# Copy electron
 shutil.copytree(os.path.join(base_dir, "electron"), os.path.join(temp_stage, "electron"))
 
-# Write production package.json
 prod_pkg = """{
   "name": "apex-retail-os",
   "version": "2.0.0",
@@ -32,14 +32,7 @@ prod_pkg = """{
 with open(os.path.join(temp_stage, "package.json"), "w", encoding="utf-8") as f:
     f.write(prod_pkg)
 
-print(f"[1/2] Build staged in temporary folder: {temp_stage}")
-print("[2/2] Packaging standalone Windows .exe with Electron 43.4.0...")
-
-if os.path.exists(out_dir):
-    try:
-        shutil.rmtree(out_dir, ignore_errors=True)
-    except Exception:
-        pass
+print("[1/2] Staged files. Packaging into:", out_dir)
 
 cmd = [
     "npx.cmd", "@electron/packager", temp_stage,
@@ -52,20 +45,18 @@ cmd = [
 ]
 
 res = subprocess.run(cmd, cwd=base_dir, capture_output=True, text=True)
-print("Packager STDOUT:\n", res.stdout)
+print("STDOUT:\n", res.stdout)
 if res.stderr:
-    print("Packager STDERR:\n", res.stderr)
+    print("STDERR:\n", res.stderr)
 
-# Cleanup temp
 shutil.rmtree(temp_stage, ignore_errors=True)
 
 exe_path = os.path.join(out_dir, "Apex Retail OS-win32-x64", "Apex Retail OS.exe")
 if os.path.exists(exe_path):
     size_mb = round(os.path.getsize(exe_path) / (1024 * 1024), 2)
     print("\n=======================================================")
-    print("[SUCCESS] Native Windows executable created successfully!")
-    print(f"Binary Path: {exe_path}")
+    print("[SUCCESS] Standalone EXE created at:", exe_path)
     print(f"Exe Size: {size_mb} MB")
     print("=======================================================")
 else:
-    print("\n[ERROR] EXE file was not found in release directory.")
+    print("[ERROR] Failed to find EXE at target path.")
