@@ -3,15 +3,20 @@ import { useApp } from '../../context/AppContext';
 import { Product, ApparelCategory } from '../../types';
 import { 
   Layers, Barcode, Box, Plus, Search, Filter, 
-  Printer, CheckCircle2, AlertCircle, Scan, Tag, RefreshCw, Zap
+  Printer, CheckCircle2, AlertCircle, Scan, Tag, RefreshCw, Zap, Percent, Radio
 } from 'lucide-react';
 import { RapidStockAuditModal } from './RapidStockAuditModal';
+import { DynamicMarkdownModal } from './DynamicMarkdownModal';
+import { RfidBulkScannerModal } from './RfidBulkScannerModal';
+import { sounds } from '../../utils/audio';
 
 export const InventoryHub: React.FC = () => {
   const { products, setProducts, currentStoreId, currentStore, stores, showToast } = useApp();
 
   const [activeSubTab, setActiveSubTab] = useState<'matrix' | 'boxes' | 'barcodeStudio' | 'audit'>('matrix');
   const [rapidAuditModalOpen, setRapidAuditModalOpen] = useState(false);
+  const [markdownModalOpen, setMarkdownModalOpen] = useState(false);
+  const [rfidModalOpen, setRfidModalOpen] = useState(false);
   const [search, setSearch] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('All');
   
@@ -161,15 +166,38 @@ export const InventoryHub: React.FC = () => {
 
           <div className="flex items-center gap-2">
             <button
-              onClick={() => setRapidAuditModalOpen(true)}
-              className="flex items-center gap-1.5 px-3.5 py-2 bg-emerald-600/15 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/30 rounded-xl text-xs font-bold transition-all tactile-btn"
+              onClick={() => {
+                setMarkdownModalOpen(true);
+                sounds.playTapClick();
+              }}
+              className="flex items-center gap-1.5 px-3 py-2 bg-rose-50 dark:bg-rose-600/15 hover:bg-rose-100 dark:hover:bg-rose-600/30 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-500/30 rounded-xl text-xs font-bold transition-all tactile-btn"
+              title="AI Dynamic Markdown & GMROI Clearance Optimizer"
+            >
+              <Percent className="w-4 h-4 text-rose-600 dark:text-rose-400" /> Dynamic Markdowns
+            </button>
+            <button
+              onClick={() => {
+                setRfidModalOpen(true);
+                sounds.playTapClick();
+              }}
+              className="flex items-center gap-1.5 px-3 py-2 bg-teal-50 dark:bg-teal-600/15 hover:bg-teal-100 dark:hover:bg-teal-600/30 text-teal-700 dark:text-teal-300 border border-teal-200 dark:border-teal-500/30 rounded-xl text-xs font-bold transition-all tactile-btn"
+              title="UHF RFID Bulk Carton Scanning Portal"
+            >
+              <Radio className="w-4 h-4 text-teal-600 dark:text-teal-400" /> RFID Portal
+            </button>
+            <button
+              onClick={() => {
+                setRapidAuditModalOpen(true);
+                sounds.playTapClick();
+              }}
+              className="flex items-center gap-1.5 px-3 py-2 bg-emerald-50 dark:bg-emerald-600/15 hover:bg-emerald-100 dark:hover:bg-emerald-600/30 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/30 rounded-xl text-xs font-bold transition-all tactile-btn"
               title="100 Scans/Min Physical Rack & Box Inventory Audit"
             >
-              <Zap className="w-4 h-4 text-emerald-400" /> Rapid Stock Audit
+              <Zap className="w-4 h-4 text-emerald-600 dark:text-emerald-400" /> Rapid Stock Audit
             </button>
             <button
               onClick={() => setNewProductModal(true)}
-              className="flex items-center gap-1.5 px-3.5 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-xl text-xs font-bold shadow-lg shadow-blue-600/20 transition-all tactile-btn"
+              className="flex items-center gap-1.5 px-3.5 py-2 bg-[#0078d4] hover:bg-[#1a86d9] text-white rounded-xl text-xs font-bold shadow transition-all tactile-btn"
             >
               <Plus className="w-4 h-4" /> Add New SKU
             </button>
@@ -594,6 +622,14 @@ export const InventoryHub: React.FC = () => {
 
       {rapidAuditModalOpen && (
         <RapidStockAuditModal onClose={() => setRapidAuditModalOpen(false)} />
+      )}
+
+      {markdownModalOpen && (
+        <DynamicMarkdownModal onClose={() => setMarkdownModalOpen(false)} />
+      )}
+
+      {rfidModalOpen && (
+        <RfidBulkScannerModal onClose={() => setRfidModalOpen(false)} />
       )}
     </div>
   );

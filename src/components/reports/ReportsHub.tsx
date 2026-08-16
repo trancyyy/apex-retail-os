@@ -2,18 +2,21 @@ import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { 
   BarChart3, TrendingUp, DollarSign, Package, AlertCircle, 
-  Download, Printer, Filter, Calendar, Users, Scissors, FileSpreadsheet, ShieldCheck
+  Download, Printer, Filter, Calendar, Users, Scissors, FileSpreadsheet, ShieldCheck, Trophy
 } from 'lucide-react';
 import { 
   ResponsiveContainer, BarChart, Bar, XAxis, YAxis, 
   Tooltip, AreaChart, Area, CartesianGrid, Legend 
 } from 'recharts';
+import { SalesLeaderboardModal } from './SalesLeaderboardModal';
+import { sounds } from '../../utils/audio';
 
 export const ReportsHub: React.FC = () => {
   const { products, invoices, customers, currentStore, stores, showToast } = useApp();
 
   const [activeReportTab, setActiveReportTab] = useState<'kpi' | 'margins' | 'aging' | 'jobwork' | 'gst'>('kpi');
   const [dateRange, setDateRange] = useState<'today' | 'week' | 'month' | 'fy'>('today');
+  const [leaderboardModalOpen, setLeaderboardModalOpen] = useState(false);
 
   // Compute live analytical aggregations
   const totalRevenue = invoices.reduce((acc, inv) => acc + inv.netPayable, 0);
@@ -86,14 +89,24 @@ export const ReportsHub: React.FC = () => {
           </div>
 
           <button
+            onClick={() => {
+              setLeaderboardModalOpen(true);
+              sounds.playTapClick();
+            }}
+            className="flex items-center gap-1.5 px-3.5 py-2 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-white rounded-xl text-xs font-bold shadow transition-all tactile-btn"
+            title="Daily Staff Sales Target & Incentive Leaderboard"
+          >
+            <Trophy className="w-3.5 h-3.5" /> Staff Leaderboard
+          </button>
+          <button
             onClick={() => handleExportCsv('Complete_MIS_Report')}
-            className="flex items-center gap-1.5 px-3.5 py-2 bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 rounded-xl text-xs font-semibold"
+            className="flex items-center gap-1.5 px-3.5 py-2 bg-white dark:bg-slate-900 hover:bg-black/5 dark:hover:bg-slate-800 border border-[#e0e0e0] dark:border-slate-800 text-[#1c1c1c] dark:text-slate-300 rounded-xl text-xs font-semibold"
           >
             <Download className="w-3.5 h-3.5" /> Export Excel
           </button>
           <button
             onClick={() => window.print()}
-            className="p-2 bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 rounded-xl"
+            className="p-2 bg-white dark:bg-slate-900 hover:bg-black/5 dark:hover:bg-slate-800 border border-[#e0e0e0] dark:border-slate-800 text-[#1c1c1c] dark:text-slate-300 rounded-xl"
             title="Print Report"
           >
             <Printer className="w-4 h-4" />
@@ -454,6 +467,10 @@ export const ReportsHub: React.FC = () => {
             </div>
           </div>
         </div>
+      )}
+
+      {leaderboardModalOpen && (
+        <SalesLeaderboardModal onClose={() => setLeaderboardModalOpen(false)} />
       )}
     </div>
   );

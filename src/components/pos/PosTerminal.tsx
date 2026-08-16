@@ -4,7 +4,7 @@ import { Product, ApparelCategory, SaleInvoice, TenderSplit, CartItem, AdvanceBo
 import { 
   Barcode, Search, Plus, Minus, Trash2, Scissors, 
   UserPlus, UserCheck, Tag, Zap, CreditCard, ShoppingCart, 
-  Sparkles, Check, ArrowRight, ShieldCheck, BookmarkCheck, Ruler, Monitor
+  Sparkles, Check, ArrowRight, ShieldCheck, BookmarkCheck, Ruler, Monitor, Globe2
 } from 'lucide-react';
 import { CheckoutModal } from './CheckoutModal';
 import { ThermalReceiptModal } from './ThermalReceiptModal';
@@ -13,6 +13,7 @@ import { AdvanceBookingModal } from './AdvanceBookingModal';
 import { FabricCalculatorModal } from './FabricCalculatorModal';
 import { CustomerFacingDisplay } from './CustomerFacingDisplay';
 import { AiStylistModal } from './AiStylistModal';
+import { EndlessAisleModal } from './EndlessAisleModal';
 import { sounds } from '../../utils/audio';
 
 export const PosTerminal: React.FC = () => {
@@ -36,6 +37,7 @@ export const PosTerminal: React.FC = () => {
   const [scanFlash, setScanFlash] = useState(false);
   const [cfdModalOpen, setCfdModalOpen] = useState(false);
   const [stylistModalOpen, setStylistModalOpen] = useState(false);
+  const [endlessAisleModalOpen, setEndlessAisleModalOpen] = useState(false);
 
   const barcodeInputRef = useRef<HTMLInputElement>(null);
 
@@ -182,7 +184,11 @@ export const PosTerminal: React.FC = () => {
     };
 
     const saved = completeSale(invoiceData);
-    sounds.playCheckoutSuccess();
+    if (tenders.upi > 0) {
+      sounds.speakUpiPayment(tenders.upi);
+    } else {
+      sounds.playCheckoutSuccess();
+    }
     setCheckoutModalOpen(false);
     setLastInvoice(saved);
     setAppliedAdvance(null);
@@ -202,14 +208,14 @@ export const PosTerminal: React.FC = () => {
   const categories = ['All', 'Mens Ethnic', 'Mens Casual', 'Womens Ethnic', 'Fabrics', 'Accessories'];
 
   return (
-    <div className={`flex-1 flex overflow-hidden bg-[#030712] ${scanFlash ? 'scan-flash-effect' : ''}`}>
+    <div className={`flex-1 flex overflow-hidden bg-[#f3f3f3] dark:bg-[#030712] ${scanFlash ? 'scan-flash-effect' : ''}`}>
       {/* LEFT AREA: Search, Category Bar & Product Quick Grid */}
-      <div className="flex-1 flex flex-col overflow-hidden border-r border-white/[0.08]">
+      <div className="flex-1 flex flex-col overflow-hidden border-r border-[#e0e0e0] dark:border-white/[0.08]">
         {/* Top Barcode Input & Scanner Bar */}
-        <div className="p-3.5 bg-slate-950/70 border-b border-white/[0.08] backdrop-blur-xl flex items-center gap-3">
+        <div className="p-3.5 bg-white dark:bg-slate-950/70 border-b border-[#e0e0e0] dark:border-white/[0.08] backdrop-blur-xl flex items-center gap-3">
           <form onSubmit={handleBarcodeSubmit} className="flex-1 relative">
             <div className="absolute left-3.5 top-2.5 flex items-center gap-2 pointer-events-none text-slate-400">
-              <Barcode className="w-5 h-5 text-emerald-400" />
+              <Barcode className="w-5 h-5 text-emerald-500" />
             </div>
             <input
               ref={barcodeInputRef}
@@ -217,27 +223,38 @@ export const PosTerminal: React.FC = () => {
               placeholder="Scan Barcode or Type SKU / Name (e.g. 8901234001018 or 'Sherwani')... Press Enter"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-slate-900/90 border border-white/[0.1] rounded-2xl pl-11 pr-24 py-2.5 text-sm text-white placeholder-slate-400 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 shadow-inner"
+              className="w-full bg-[#f3f3f3] dark:bg-slate-900/90 border border-[#e0e0e0] dark:border-white/[0.1] rounded-2xl pl-11 pr-24 py-2.5 text-sm text-[#1c1c1c] dark:text-white placeholder-slate-400 focus:border-[#0078d4] focus:outline-none shadow-inner"
             />
             <div className="absolute right-3 top-2.5 flex items-center gap-1.5">
-              <kbd className="px-2 py-0.5 text-[10px] font-mono text-slate-300 bg-slate-800 rounded-lg border border-white/[0.1] shadow-sm">
+              <kbd className="px-2 py-0.5 text-[10px] font-mono text-slate-400 bg-black/5 dark:bg-slate-800 rounded-lg border border-[#e0e0e0] dark:border-white/[0.1] shadow-xs">
                 F9
               </kbd>
             </div>
           </form>
 
-          {/* Quick Tools: Fabric Cut, Advance Token, AI Stylist & CFD Display */}
+          {/* Quick Tools: Endless Aisle, AI Stylist, Fabric Cut, Advance Token & CFD Display */}
           <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                setEndlessAisleModalOpen(true);
+                sounds.playTapClick();
+              }}
+              className="flex items-center gap-1.5 px-3 py-2.5 bg-indigo-50 dark:bg-indigo-600/20 hover:bg-indigo-100 dark:hover:bg-indigo-600/30 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/30 rounded-2xl text-xs font-bold whitespace-nowrap transition-all tactile-btn"
+              title="Endless Aisle — Omnichannel 5-Store Stock Fulfillment"
+            >
+              <Globe2 className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-300" /> Endless Aisle
+            </button>
             <button
               type="button"
               onClick={() => {
                 setStylistModalOpen(true);
                 sounds.playTapClick();
               }}
-              className="flex items-center gap-1.5 px-3.5 py-2.5 bg-purple-600/15 hover:bg-purple-600/30 text-purple-300 border border-purple-500/30 rounded-2xl text-xs font-bold whitespace-nowrap transition-all tactile-btn"
+              className="flex items-center gap-1.5 px-3 py-2.5 bg-purple-50 dark:bg-purple-600/15 hover:bg-purple-100 dark:hover:bg-purple-600/30 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-500/30 rounded-2xl text-xs font-bold whitespace-nowrap transition-all tactile-btn"
               title="AI Wardrobe Stylist & VIP Ensemble Builder"
             >
-              <Sparkles className="w-3.5 h-3.5 text-purple-300 animate-pulse" /> AI Stylist
+              <Sparkles className="w-3.5 h-3.5 text-purple-500 animate-pulse" /> AI Stylist
             </button>
             <button
               type="button"
@@ -245,7 +262,7 @@ export const PosTerminal: React.FC = () => {
                 setFabricModalOpen(true);
                 sounds.playTapClick();
               }}
-              className="flex items-center gap-1.5 px-3.5 py-2.5 bg-indigo-600/15 hover:bg-indigo-600/30 text-indigo-300 border border-indigo-500/30 rounded-2xl text-xs font-bold whitespace-nowrap transition-all tactile-btn"
+              className="flex items-center gap-1.5 px-3 py-2.5 bg-sky-50 dark:bg-sky-600/15 hover:bg-sky-100 dark:hover:bg-sky-600/30 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-500/30 rounded-2xl text-xs font-bold whitespace-nowrap transition-all tactile-btn"
               title="Metered Fabric Cutting Calculator (FrmCarpetCalc)"
             >
               <Scissors className="w-3.5 h-3.5" /> Fabric Cut
@@ -256,8 +273,8 @@ export const PosTerminal: React.FC = () => {
                 setAdvanceModalOpen(true);
                 sounds.playTapClick();
               }}
-              className="flex items-center gap-1.5 px-3.5 py-2.5 bg-amber-600/15 hover:bg-amber-600/30 text-amber-300 border border-amber-500/30 rounded-2xl text-xs font-bold whitespace-nowrap transition-all tactile-btn"
-              title="Customer Advance Bookings & Tokens (AdvanceVoucherPop)"
+              className="flex items-center gap-1.5 px-3 py-2.5 bg-amber-50 dark:bg-amber-600/15 hover:bg-amber-100 dark:hover:bg-amber-600/30 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-500/30 rounded-2xl text-xs font-bold whitespace-nowrap transition-all tactile-btn"
+              title="Customer Advance Bookings & Tokens"
             >
               <Tag className="w-3.5 h-3.5" /> Advance Orders
             </button>
@@ -267,10 +284,10 @@ export const PosTerminal: React.FC = () => {
                 setCfdModalOpen(true);
                 sounds.playTapClick();
               }}
-              className="flex items-center gap-1.5 px-3.5 py-2.5 bg-blue-600/15 hover:bg-blue-600/30 text-blue-300 border border-blue-500/30 rounded-2xl text-xs font-bold whitespace-nowrap transition-all tactile-btn"
+              className="flex items-center gap-1.5 px-3 py-2.5 bg-blue-50 dark:bg-blue-600/15 hover:bg-blue-100 dark:hover:bg-blue-600/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-500/30 rounded-2xl text-xs font-bold whitespace-nowrap transition-all tactile-btn"
               title="Dual-Screen Customer Facing Display (CFD)"
             >
-              <Monitor className="w-3.5 h-3.5 text-blue-400" /> Customer Screen
+              <Monitor className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" /> Customer Screen
             </button>
           </div>
 
@@ -713,6 +730,10 @@ export const PosTerminal: React.FC = () => {
             items.forEach(it => addToCart(it, 1));
           }}
         />
+      )}
+
+      {endlessAisleModalOpen && (
+        <EndlessAisleModal onClose={() => setEndlessAisleModalOpen(false)} />
       )}
     </div>
   );

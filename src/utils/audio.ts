@@ -1,4 +1,4 @@
-// Subtle Web Audio API sound synthesizer for tactile POS feedback
+// Subtle Web Audio API sound synthesizer & Smart Soundbox Voice for tactile POS feedback
 
 class SoundEffects {
   private ctx: AudioContext | null = null;
@@ -85,6 +85,32 @@ class SoundEffects {
 
       osc.start();
       osc.stop(ctx.currentTime + 0.02);
+    } catch {}
+  }
+
+  // Smart UPI Soundbox Voice Notification (Paytm / PhonePe style)
+  speakUpiPayment(amount: number) {
+    try {
+      this.playCheckoutSuccess();
+
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        window.speechSynthesis.cancel(); // clear previous
+        const text = `₹${amount.toLocaleString('en-IN')} received successfully on Apex UPI.`;
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.rate = 1.05;
+        utterance.pitch = 1.0;
+        
+        // Find best natural voice
+        const voices = window.speechSynthesis.getVoices();
+        const enVoice = voices.find(v => v.lang.includes('en-IN') || v.lang.includes('en-GB') || v.name.includes('Natural'));
+        if (enVoice) {
+          utterance.voice = enVoice;
+        }
+
+        setTimeout(() => {
+          window.speechSynthesis.speak(utterance);
+        }, 200);
+      }
     } catch {}
   }
 }
