@@ -11,7 +11,8 @@ import { sounds } from '../utils/audio';
 export const Navbar: React.FC<{ 
   onOpenShiftModal: () => void;
   onOpenSettings?: () => void;
-}> = ({ onOpenShiftModal, onOpenSettings }) => {
+  onOpenActionReport?: () => void;
+}> = ({ onOpenShiftModal, onOpenSettings, onOpenActionReport }) => {
   const { 
     currentStoreId, setCurrentStoreId, currentStore, stores, 
     aiCopilotOpen, setAiCopilotOpen,
@@ -150,6 +151,20 @@ export const Navbar: React.FC<{
             </span>
           )}
         </button>
+
+        {/* Action Report Trigger Button */}
+        {onOpenActionReport && (
+          <button
+            onClick={() => {
+              sounds.playTapClick();
+              onOpenActionReport();
+            }}
+            className="flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-bold bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white shadow-xs transition-all tactile-btn"
+            title="Open Deep-Dive Emerge Stock & Sale Action Report"
+          >
+            <span>⚡ Action Report</span>
+          </button>
+        )}
 
         {/* Microsoft Copilot AI Button */}
         <button

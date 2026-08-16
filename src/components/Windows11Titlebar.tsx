@@ -23,7 +23,8 @@ declare global {
 export const Windows11Titlebar: React.FC<{ 
   onOpenCommandPalette: () => void;
   onOpenSettings?: () => void;
-}> = ({ onOpenCommandPalette, onOpenSettings }) => {
+  onOpenActionReport?: () => void;
+}> = ({ onOpenCommandPalette, onOpenSettings, onOpenActionReport }) => {
   const { currentStore, cashInDrawer, theme, setTheme } = useApp();
   const [isMaximized, setIsMaximized] = useState(true);
 
@@ -118,6 +119,20 @@ export const Windows11Titlebar: React.FC<{
             <Sun className="w-3.5 h-3.5 text-amber-400" />
           )}
         </button>
+
+        {/* Action Report Button */}
+        {onOpenActionReport && (
+          <button
+            onClick={() => {
+              sounds.playTapClick();
+              onOpenActionReport();
+            }}
+            className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-[10px] shadow-xs transition-all tactile-btn mr-1 animate-pulse hover:animate-none"
+            title="Open Deep-Dive Emerge Stock & Sale Action Report"
+          >
+            <span>⚡ Action Report</span>
+          </button>
+        )}
 
         {/* Settings Dialog Trigger */}
         {onOpenSettings && (

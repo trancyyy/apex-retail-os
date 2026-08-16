@@ -19,11 +19,13 @@ import { CommandPalette } from './components/CommandPalette';
 import { ToastContainer } from './components/Toast';
 import { ShiftEndModal } from './components/pos/ShiftEndModal';
 import { SettingsModal } from './components/settings/SettingsModal';
+import { ActionReportModal } from './components/reports/ActionReportModal';
 
 const MainLayout: React.FC = () => {
   const { activeTab, isStandalonePosMode, cashierName, setCommandPaletteOpen } = useApp();
   const [shiftModalOpen, setShiftModalOpen] = useState(false);
   const [settingsModalOpen, setSettingsModalOpen] = useState(false);
+  const [actionReportOpen, setActionReportOpen] = useState(false);
   const [isLocked, setIsLocked] = useState(false);
 
   // If in Dedicated Standalone POS Terminal Mode
@@ -34,6 +36,7 @@ const MainLayout: React.FC = () => {
         <Windows11Titlebar 
           onOpenCommandPalette={() => setCommandPaletteOpen(true)}
           onOpenSettings={() => setSettingsModalOpen(true)}
+          onOpenActionReport={() => setActionReportOpen(true)}
         />
 
         {/* Dedicated Standalone POS Kiosk Header */}
@@ -70,6 +73,11 @@ const MainLayout: React.FC = () => {
             onUnlock={() => setIsLocked(false)} 
           />
         )}
+
+        {/* Action Report Modal in Standalone Mode */}
+        {actionReportOpen && (
+          <ActionReportModal onClose={() => setActionReportOpen(false)} />
+        )}
       </div>
     );
   }
@@ -81,12 +89,14 @@ const MainLayout: React.FC = () => {
       <Windows11Titlebar 
         onOpenCommandPalette={() => setCommandPaletteOpen(true)}
         onOpenSettings={() => setSettingsModalOpen(true)}
+        onOpenActionReport={() => setActionReportOpen(true)}
       />
 
       {/* Fluent Command & Breadcrumb Bar */}
       <Navbar 
         onOpenShiftModal={() => setShiftModalOpen(true)}
         onOpenSettings={() => setSettingsModalOpen(true)}
+        onOpenActionReport={() => setActionReportOpen(true)}
       />
 
       {/* Main App Body */}
@@ -123,6 +133,11 @@ const MainLayout: React.FC = () => {
       {/* Settings Modal */}
       {settingsModalOpen && (
         <SettingsModal onClose={() => setSettingsModalOpen(false)} />
+      )}
+
+      {/* Deep-Dive Action Report Modal */}
+      {actionReportOpen && (
+        <ActionReportModal onClose={() => setActionReportOpen(false)} />
       )}
     </div>
   );
