@@ -4,6 +4,25 @@
 
 @layer base {
   :root {
+    /* Windows 11 Fluent Light Mode (Default) */
+    --fluent-bg-canvas: #f3f3f3;
+    --fluent-bg-surface: #ffffff;
+    --fluent-bg-card: #ffffff;
+    --fluent-bg-card-hover: #f9f9f9;
+    --fluent-bg-input: #ffffff;
+    --fluent-border-subtle: #e5e5e5;
+    --fluent-border-card: #e0e0e0;
+    --fluent-border-accent: #0078d4;
+    --fluent-accent: #0078d4;
+    --fluent-accent-hover: #198ae4;
+    --fluent-accent-active: #006cc1;
+    --fluent-text-primary: #1c1c1c;
+    --fluent-text-secondary: #5c5c5c;
+    --fluent-text-tertiary: #8a8a8a;
+  }
+
+  .dark {
+    /* Windows 11 Fluent Dark Mode */
     --fluent-bg-canvas: #1c1c1c;
     --fluent-bg-surface: #242424;
     --fluent-bg-card: #2b2b2b;
@@ -48,39 +67,45 @@
   justify-content: center;
   width: 46px;
   height: 36px;
-  color: #cccccc;
-  transition: background-color 0.1s ease, color 0.1s ease;
+  color: inherit;
+  opacity: 0.75;
+  transition: background-color 0.1s ease, opacity 0.1s ease;
 }
 .win11-caption-btn:hover {
-  background-color: rgba(255, 255, 255, 0.08);
-  color: #ffffff;
+  background-color: rgba(128, 128, 128, 0.15);
+  opacity: 1;
 }
 .win11-caption-btn.win11-close:hover {
   background-color: #c42b1c !important;
   color: #ffffff !important;
+  opacity: 1;
 }
 
 /* Windows 11 Fluent Card Surface */
 .fluent-card {
-  background-color: #2b2b2b;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background-color: var(--fluent-bg-card);
+  border: 1px solid var(--fluent-border-card);
   border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25), inset 0 1px 0 0 rgba(255, 255, 255, 0.06);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
 }
 
 .fluent-card-elevated {
-  background-color: #2f2f2f;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: var(--fluent-bg-surface);
+  border: 1px solid var(--fluent-border-card);
   border-radius: 10px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35), inset 0 1px 0 0 rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
 }
 
 /* Windows 11 Navigation Item Active Indicator */
 .fluent-nav-active {
   position: relative;
+  background-color: rgba(0, 120, 212, 0.08) !important;
+  color: #0078d4 !important;
+  font-weight: 600;
+}
+.dark .fluent-nav-active {
   background-color: rgba(255, 255, 255, 0.07) !important;
   color: #ffffff !important;
-  font-weight: 600;
 }
 .fluent-nav-active::before {
   content: "";
@@ -101,7 +126,7 @@
   border-radius: 6px;
   font-weight: 600;
   transition: all 0.12s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 .fluent-btn-primary:hover {
   background-color: #1a86d9;
@@ -113,17 +138,13 @@
 
 .fluent-btn-subtle {
   background-color: transparent;
-  color: #cccccc;
+  color: inherit;
   border: 1px solid transparent;
   border-radius: 6px;
   transition: all 0.12s ease;
 }
 .fluent-btn-subtle:hover {
-  background-color: rgba(255, 255, 255, 0.06);
-  color: #ffffff;
-}
-.fluent-btn-subtle:active {
-  background-color: rgba(255, 255, 255, 0.04);
+  background-color: rgba(128, 128, 128, 0.08);
 }
 
 /* Windows 11 Fluent Slim Scrollbar */
@@ -135,11 +156,11 @@
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(128, 128, 128, 0.3);
   border-radius: 6px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.35);
+  background: rgba(128, 128, 128, 0.5);
 }
 
 /* Tactile feedback */

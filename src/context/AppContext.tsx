@@ -81,6 +81,9 @@ interface AppContextType {
 
   isStandalonePosMode: boolean;
   setIsStandalonePosMode: (enabled: boolean) => void;
+
+  theme: 'light' | 'dark';
+  setTheme: (theme: 'light' | 'dark') => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -89,6 +92,29 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [currentStoreId, setCurrentStoreId] = useState<StoreId>('zirakpur_hq');
   const [activeTab, setActiveTab] = useState<NavTab>('pos');
   const [isStandalonePosMode, setIsStandalonePosMode] = useState<boolean>(false);
+  
+  const [theme, setThemeState] = useState<'light' | 'dark'>(() => {
+    const saved = localStorage.getItem('emerges_theme');
+    return (saved === 'dark' || saved === 'light') ? saved : 'light';
+  });
+
+  const setTheme = (newTheme: 'light' | 'dark') => {
+    setThemeState(newTheme);
+    localStorage.setItem('emerges_theme', newTheme);
+    if (newTheme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  };
+
+  useEffect(() => {
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [theme]);
   
   const [products, setProducts] = useState<Product[]>(() => {
     const saved = localStorage.getItem('emerges_v3_products');
@@ -440,7 +466,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         setCashInDrawer,
         cashierName,
         isStandalonePosMode,
-        setIsStandalonePosMode
+        setIsStandalonePosMode,
+        theme,
+        setTheme
       }}
     >
       {children}
